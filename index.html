@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Passion Pathway</title>
+
+<style>
+:root {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #aaaaaa;
+    --accent: #d4af37;
+    --accent-hover: #f3cf58;
+    --danger: #cf6679;
+    --success: #03dac6;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    max-width: 600px;
+    width: 100%;
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    padding: 20px;
+    border: 1px solid #333;
+}
+
+header h1 {
+    text-align: center;
+    color: var(--accent);
+}
+
+.progress-bar-bg {
+    background-color: #333;
+    height: 8px;
+    border-radius: 4px;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar-fill {
+    background-color: var(--accent);
+    height: 100%;
+    width: 0%;
+}
+
+.content-box {
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.stage-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.verse-item {
+    background-color: #2a2a2a;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 13px;
+    border-left: 3px solid var(--accent);
+    margin-top: 5px;
+}
+
+.fact-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(3,218,198,0.1);
+    border: 1px solid var(--success);
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.reflection-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(212,175,55,0.1);
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.saying-box {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: rgba(255,255,255,0.05);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    font-style: italic;
+}
+
+.option-btn {
+    width: 100%;
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #444;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.option-btn.correct {
+    background-color: rgba(3,218,198,0.2);
+    border-color: var(--success);
+}
+
+.option-btn.wrong {
+    background-color: rgba(207,102,121,0.2);
+    border-color: var(--danger);
+}
+
+.next-btn {
+    display: none;
+    width: 100%;
+    background-color: var(--accent);
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app-container">
+<header>
+<h1>The Passion Pathway</h1>
+<p>14 Scriptural Stations of the Cross</p>
+</header>
+
+<div id="progress-text">Station 1 of 14</div>
+<div class="progress-bar-bg">
+<div class="progress-bar-fill" id="progress-bar-fill"></div>
+</div>
+
+<div id="main-content">
+<div class="content-box">
+<h2 id="stage-title"></h2>
+<p id="stage-desc"></p>
+<img id="stage-image" class="stage-image" src="">
+
+<div id="verse-container"></div>
+
+<div class="fact-box" id="fact-content"></div>
+<div class="saying-box" id="saying-content"></div>
+<div class="reflection-box" id="reflection-content"></div>
+</div>
+
+<div class="quiz-section">
+<h3>Test Your Knowledge</h3>
+<p id="quiz-question"></p>
+<div id="quiz-options"></div>
+<div id="quiz-feedback"></div>
+<button id="next-stage-btn" class="next-btn" onclick="goToNextStage()">Next Station ➔</button>
+</div>
+</div>
+</div>
+
+<script>
+let currentStageIndex = 0;
+let score = 0;
+
+const stages = [
+{
+title: "1. Jesus in Gethsemane",
+desc: "Jesus prays in agony before His arrest.",
+image: "https://upload.wikimedia.org/wikipedia/commons/5/5c/Christ_in_Gethsemane.jpg",
+verses: ["Matt 26:36-41","Mark 14:32-35"],
+fact: "Luke says His sweat was like drops of blood.",
+saying: "Not my will, but Yours be done.",
+reflection: "When life is painful, do I run away or pray and obey God?",
+question: "What did Jesus ask His disciples to do?",
+options: ["Sleep","Stay awake and watch","Run away","Prepare food"],
+answer: "Stay awake and watch"
+},
+{
+title: "2. Jesus is Betrayed",
+desc: "Judas betrays Jesus with a kiss.",
+image: "https://upload.wikimedia.org/wikipedia/commons/3/3c/The_Taking_of_Christ-Caravaggio.jpg",
+verses: ["Mark 14:43-46"],
+fact: "Jesus healed the servant's ear.",
+saying: "Friend, do what you came for.",
+reflection: "Have I ever betrayed Jesus by my actions?",
+question: "How did Judas identify Jesus?",
+options: ["Wave","Kiss","Point","Shout"],
+answer: "Kiss"
+},
+{
+title: "3. Jesus Before Sanhedrin",
+desc: "Jesus is condemned for blasphemy.",
+image: "https://upload.wikimedia.org/wikipedia/commons/a/a4/Jesus_before_the_Sanhedrin.jpg",
+verses: ["Luke 22:66-71"],
+fact: "Sanhedrin was the Jewish council.",
+saying: "You will see the Son of Man seated at the right hand.",
+reflection: "Do I stand for truth even when it costs me?",
+question: "What charge condemned Jesus?",
+options: ["Theft","Blasphemy","Murder","Tax evasion"],
+answer: "Blasphemy"
+},
+{
+title: "4. Peter Denies Jesus",
+desc: "Peter denies Jesus three times.",
+image: "https://upload.wikimedia.org/wikipedia/commons/7/70/The_Denial_of_Saint_Peter-Caravaggio.jpg",
+verses: ["Luke 22:54-62"],
+fact: "Jesus looked at Peter after the third denial.",
+saying: "Peter wept bitterly.",
+reflection: "When I fail Jesus, do I repent like Peter?",
+question: "Where was Peter?",
+options: ["Temple","Courtyard fire","Sea","Garden"],
+answer: "Courtyard fire"
+},
+{
+title: "5. Jesus Before Pilate",
+desc: "Pilate sentences Jesus.",
+image: "https://upload.wikimedia.org/wikipedia/commons/9/9d/Christ_before_Pilate.jpg",
+verses: ["John 18:28-40"],
+fact: "Pilate washed his hands.",
+saying: "My kingdom is not of this world.",
+reflection: "Is Jesus truly my King?",
+question: "Who was released instead?",
+options: ["Peter","Barabbas","John","Paul"],
+answer: "Barabbas"
+},
+{
+title: "6. Scourged and Crowned",
+desc: "Jesus is mocked and beaten.",
+image: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Crowning_with_thorns.jpg",
+verses: ["John 19:1-3"],
+fact: "Crown made from thorn plant.",
+saying: "Hail, King of the Jews (mocked).",
+reflection: "Do I honor Jesus as King or mock Him by my life?",
+question: "What was placed on His head?",
+options: ["Helmet","Crown of thorns","Hat","Cloth"],
+answer: "Crown of thorns"
+},
+{
+title: "7. Jesus Carries Cross",
+desc: "Jesus carries the cross.",
+image: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Christ_carrying_the_cross.jpg",
+verses: ["John 19:16-17"],
+fact: "Road called Via Dolorosa.",
+saying: "Whoever wants to follow me must take up his cross.",
+reflection: "What cross am I called to carry?",
+question: "What did Jesus carry?",
+options: ["Stone","Cross","Table","Chair"],
+answer: "Cross"
+},
+{
+title: "8. Simon Helps Jesus",
+desc: "Simon helps carry cross.",
+image: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Simon_of_Cyrene.jpg",
+verses: ["Luke 23:26"],
+fact: "Simon from Cyrene.",
+saying: "Carry one another’s burdens.",
+reflection: "Do I help others carry their burdens?",
+question: "Who helped Jesus?",
+options: ["Peter","John","Simon","James"],
+answer: "Simon"
+},
+{
+title: "9. Jesus Meets Women",
+desc: "Jesus speaks to weeping women.",
+image: "https://upload.wikimedia.org/wikipedia/commons/0/0c/Christ_Console_the_Women_of_Jerusalem.jpg",
+verses: ["Luke 23:27-31"],
+fact: "Only in Luke.",
+saying: "Do not weep for me.",
+reflection: "Do I weep over sin?",
+question: "Who did Jesus speak to?",
+options: ["Soldiers","Women","Disciples","Children"],
+answer: "Women"
+},
+{
+title: "10. Jesus Crucified",
+desc: "Jesus nailed to cross.",
+image: "https://upload.wikimedia.org/wikipedia/commons/3/3c/Crucifixion_by_Velazquez.jpg",
+verses: ["Luke 23:33"],
+fact: "Romans used crucifixion.",
+saying: "Father, forgive them.",
+reflection: "Can I forgive those who hurt me?",
+question: "What did soldiers gamble for?",
+options: ["Shoes","Robe","Food","Money"],
+answer: "Robe"
+},
+{
+title: "11. Promise to Thief",
+desc: "Jesus saves the thief.",
+image: "https://upload.wikimedia.org/wikipedia/commons/6/6d/Good_Thief.jpg",
+verses: ["Luke 23:39-43"],
+fact: "Salvation even at last moment.",
+saying: "Today you will be with me in paradise.",
+reflection: "Have I truly repented?",
+question: "What did thief ask?",
+options: ["Help me","Remember me","Save me","Water"],
+answer: "Remember me"
+},
+{
+title: "12. Jesus Gives Mother",
+desc: "Jesus entrusts Mary to John.",
+image: "https://upload.wikimedia.org/wikipedia/commons/1/1e/Behold_Thy_Mother.jpg",
+verses: ["John 19:25-27"],
+fact: "Eldest son responsibility.",
+saying: "Behold your mother.",
+reflection: "Do I care for others like family?",
+question: "Who took care of Mary?",
+options: ["Peter","John","James","Thomas"],
+answer: "John"
+},
+{
+title: "13. Jesus Dies",
+desc: "Jesus dies on cross.",
+image: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Jesus_dies_on_the_cross.jpg",
+verses: ["Luke 23:44-46"],
+fact: "Temple curtain torn.",
+saying: "It is finished.",
+reflection: "Jesus paid it all — have I given my life to Him?",
+question: "What happened in temple?",
+options: ["Earthquake","Curtain torn","Fire","Flood"],
+answer: "Curtain torn"
+},
+{
+title: "14. Jesus Buried",
+desc: "Jesus laid in tomb.",
+image: "https://upload.wikimedia.org/wikipedia/commons/8/8c/Entombment_of_Christ-Caravaggio.jpg",
+verses: ["Matt 27:57-60"],
+fact: "Tomb carved in rock.",
+saying: "Into Your hands I commit my spirit.",
+reflection: "Do I trust God even in darkness?",
+question: "What wrapped Jesus?",
+options: ["Cloth and spices","Rope","Leaves","Blanket"],
+answer: "Cloth and spices"
+}
+];
+
+function renderStage(index) {
+const stage = stages[index];
+
+document.getElementById('stage-title').innerText = stage.title;
+document.getElementById('stage-desc').innerText = stage.desc;
+document.getElementById('stage-image').src = stage.image;
+document.getElementById('fact-content').innerHTML = "<strong>Fun Fact:</strong> " + stage.fact;
+document.getElementById('saying-content').innerHTML = "<strong>Jesus Said:</strong> " + stage.saying;
+document.getElementById('reflection-content').innerHTML = "<strong>Reflect:</strong> " + stage.reflection;
+
+const verseContainer = document.getElementById('verse-container');
+verseContainer.innerHTML = "";
+stage.verses.forEach(v => {
+const div = document.createElement('div');
+div.className = 'verse-item';
+div.innerText = v;
+verseContainer.appendChild(div);
+});
+
+document.getElementById('quiz-question').innerText = stage.question;
+document.getElementById('quiz-feedback').innerText = "";
+document.getElementById('next-stage-btn').style.display = "none";
+
+const optionsContainer = document.getElementById('quiz-options');
+optionsContainer.innerHTML = "";
+stage.options.forEach(option => {
+const btn = document.createElement('button');
+btn.className = 'option-btn';
+btn.innerText = option;
+btn.onclick = () => checkAnswer(btn, option, stage.answer);
+optionsContainer.appendChild(btn);
+});
+
+const progressPercent = ((index+1)/stages.length)*100;
+document.getElementById('progress-bar-fill').style.width = progressPercent + "%";
+document.getElementById('progress-text').innerText = `Station ${index+1} of ${stages.length}`;
+}
+
+function checkAnswer(btn, selected, correct) {
+const feedback = document.getElementById('quiz-feedback');
+const buttons = document.querySelectorAll('.option-btn');
+buttons.forEach(b => b.disabled = true);
+
+if(selected === correct) {
+btn.classList.add('correct');
+feedback.innerText = "Correct!";
+score++;
+} else {
+btn.classList.add('wrong');
+feedback.innerText = "Wrong! Correct answer: " + correct;
+buttons.forEach(b => {
+if(b.innerText === correct) b.classList.add('correct');
+});
+}
+
+document.getElementById('next-stage-btn').style.display = "block";
+}
+
+function goToNextStage() {
+currentStageIndex++;
+if(currentStageIndex < stages.length) {
+renderStage(currentStageIndex);
+} else {
+document.getElementById('main-content').innerHTML = `
+<h2>Journey Completed</h2>
+<p>Your Score: ${score} / ${stages.length}</p>
+<button onclick="location.reload()">Restart</button>
+`;
+}
+}
+
+renderStage(currentStageIndex);
+</script>
+
+</body>
+</html>
